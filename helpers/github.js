@@ -23,8 +23,12 @@ let getReposByUsername = (username, callback) => {
   axios(options)
   .then(function(response) {
     // console.log('axios github api response:::', response);
-    database.save(response.data, function(err, reponse) {
-      console.log('this will return a reponse to server');
+    database.save(response.data, function(err, data) {
+      if (err) {
+        callback(err);
+      } else {
+        callback(null, data);
+      }
     });
   })
   .catch(function(error) {

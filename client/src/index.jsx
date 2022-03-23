@@ -11,32 +11,49 @@ class App extends React.Component {
       repos: []
     }
     this.search = this.search.bind(this);
+    this.addRepos = this.addRepos.bind(this);
+    this.getRepos = this.getRepos.bind(this);
   }
 
-  search (term) {
-    console.log(`${term} was searched`);
-    // TODO
+  componentDidMount() {
+    this.getRepos();
+  }
 
+  getRepos() {
+    $.ajax({
+      type: "GET",
+      url: "/repos",
+      dataType: 'json',
+      success: this.addRepos
+    });
+  }
+
+  postRepo(term) {
     $.ajax({
       type: "POST",
       url: "/repos",
       data: JSON.stringify({"term": term}),
       contentType: 'application/json',
-      success: function(response) {
-        console.log('post functionality working');
-      }
+      success: this.getRepos
     });
+  }
 
-    // $.post('/repos', {'term': term}, function(response) {
-    //   console.log('post request response:::', response);
-    // });
+  addRepos(repos) {
+    console.log('repos on client:::', repos);
+    console.log('this in addRepos', this);
+    this.setState({repos: repos});
+  }
+
+  search(term) {
+    console.log(`${term} was searched`);
+    this.postRepo(term);
   }
 
   render () {
     return (<div>
       <h1>Github Fetcher</h1>
-      <RepoList repos={this.state.repos}/>
       <Search onSearch={this.search}/>
+      <RepoList repos={this.state.repos}/>
     </div>)
   }
 }
@@ -48,4 +65,5 @@ ReactDOM.render(<App />, document.getElementById('app'));
   // 1B: bind search correctly on both app and search (done)
 //sub-problem 2: make an ajax (axios) post request to the server with the term (done)
 
-
+// sub-problem 5: on load, get the top 25 repos and render them to the screen
+  // 5A:
